@@ -2,6 +2,9 @@ package com.example.netflix;
 
 import com.example.netflix.infrastructure.DatabaseConfig;
 import com.example.netflix.models.Movie;
+import com.example.netflix.services.FavoritesService;
+import com.example.netflix.services.MovieService;
+import com.example.netflix.services.UserService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,14 +20,22 @@ import java.util.List;
 
 public class HelloController {
     private DatabaseConfig config;
+    private UserService userService;
+    private MovieService movieService;
+    private FavoritesService favoritesService;
 
     public void setConfig(DatabaseConfig config) {
         this.config = config;
         testConnection();
         testDb();
+    }
 
-        showMovies();
-        getAllMovies();
+    public void setService(UserService userService, MovieService movieService, FavoritesService favoritesService) {
+        this.userService = userService;
+        this.movieService = movieService;
+        this.favoritesService = favoritesService;
+
+        loadMovies();
     }
 
     // FXML her
@@ -34,17 +45,21 @@ public class HelloController {
     @FXML private TableColumn<Movie, String> movieGenreColumn;
     @FXML private TableColumn<Movie, String> movieLengthColumn;
     @FXML private TableColumn<Movie, String> movieDescriptionColumn;
+    @FXML private ListView<Movie> favoritesList;
 
     @FXML private TextField emailTxt;
     @FXML private TextField movieTxt;
     @FXML private Button add;
     @FXML private Button remove;
     @FXML private Label errorLabel;
+    @FXML private Button confirmEmail;
 
     private ObservableList<Movie> movieList;
+    private ObservableList<Movie> favorites;
 
     public void initialize() {
         movieList = FXCollections.observableArrayList();
+        favorites = FXCollections.observableArrayList();
 
         movieIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         movieNameColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -53,7 +68,7 @@ public class HelloController {
         movieDescriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
     }
 
-    // Milepæl B: Viser antal film i console + test af connection
+    // Milepæl B: Viser antal film i console + test af connection (Skal ikke ligge her i ui)
     public void testDb() {
         String sql = "SELECT COUNT(*) FROM movies";
 
@@ -90,48 +105,45 @@ public class HelloController {
         alert.showAndWait();
     }
 
-    public void showMovies( ){
-        if (config == null) {
-            System.err.println("Config not set yet!");
-            return;
-        }
-
+    public void loadMovies( ){
         movieList.clear();
-        movieList.addAll(getAllMovies());
+        movieList.addAll(movieService.getAllMovies());
         movieTableView.setItems(movieList);
     }
 
-    public List<Movie> readAllMovies() {
-        if (config == null) {
-            throw new IllegalStateException("DatabaseConfig not set");
-        }
+    public void onActionConfirmEmail()  {
+       String email = emailTxt.getText();
+       List<Movie> favoriteMovies = favoritesService.getFavoritesByEmail(email);
 
-        List<Movie> movies = new ArrayList<>();
-        String sql = "SELECT id, name, genre, length, description FROM movies";
+       favorites.clear();
+       favorites.addAll(favoriteMovies);
+       favoritesList.setItems(favorites);
+       emailTxt.clear();
 
-        try (Connection conn = config.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String title = rs.getString("name");
-                String genre = rs.getString("genre");
-                String length = rs.getString("length");
-                String description= rs.getString("description");
-
-                Movie movie = new Movie(id, title, genre, length, description);
-                movies.add(movie);
-            }
-
-        } catch (SQLException e) {
-            throw new  RuntimeException("Failed to read all Movies", e);
-        }
-
-        return movies;
+       if (email.isEmpty()) {
+           refreshFavoritesView();
+       }
     }
 
-    public List<Movie> getAllMovies() {
-        return readAllMovies();
+    public void refreshFavoritesView() {
+        favorites.clear();
+    }
+
+    public void add() {
+        Movie selectedMovie = movieTableView.getSelectionModel().getSelectedItem();
+        String email = emailTxt.getText();
+
+        if (selectedMovie != null && email != null) {
+            favoritesService.addFavorite(email, selectedMovie.getId());
+            favorites.add(selectedMovie);
+        }
+    }
+
+    public void remove() {
+
+    }
+
+    public void onActionMovieTxt() {
+
     }
 }

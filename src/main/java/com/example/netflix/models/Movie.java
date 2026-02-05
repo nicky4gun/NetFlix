@@ -15,6 +15,13 @@ public class Movie {
         this.description = description;
     }
 
+    public Movie (String title, String genre, String length, String description) {
+        this.title = title;
+        this.genre = genre;
+        this.length = length;
+        this.description = description;
+    }
+
     public int getId() {
         return id;
     }
@@ -54,4 +61,8 @@ public class Movie {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return "Title: " + title + ", Genre: " + genre + ", Length: " + length + ", Description: " + description;}
 }
