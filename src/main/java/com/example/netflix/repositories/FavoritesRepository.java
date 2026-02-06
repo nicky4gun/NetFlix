@@ -33,26 +33,6 @@ public class FavoritesRepository {
         }
     }
 
-    public int getUserIdByEmail(String email) {
-        String sql = "SELECT id FROM users WHERE email = ?";
-
-        try (Connection conn = config.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt("id");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to get user", e);
-        }
-
-        return 0;
-    }
-
     public List<Movie> readAllFavorites(String email) {
         List<Movie> favorites = new ArrayList<>();
         String sql = """

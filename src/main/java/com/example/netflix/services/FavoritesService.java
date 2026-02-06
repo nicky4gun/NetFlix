@@ -3,14 +3,17 @@ package com.example.netflix.services;
 import com.example.netflix.models.Favorite;
 import com.example.netflix.models.Movie;
 import com.example.netflix.repositories.FavoritesRepository;
+import com.example.netflix.repositories.UserRepository;
 
 import java.util.List;
 
 public class FavoritesService {
     private final FavoritesRepository favoritesRepository;
+    private final UserRepository userRepository;
 
-    public FavoritesService(FavoritesRepository favoritesRepository) {
+    public FavoritesService(FavoritesRepository favoritesRepository, UserRepository userRepository) {
         this.favoritesRepository = favoritesRepository;
+        this.userRepository = userRepository;
     }
 
     public void addFavorite(String email, int movieId) {
@@ -18,7 +21,7 @@ public class FavoritesService {
             throw  new  IllegalArgumentException("Email is null or empty");
         }
 
-        int userId = favoritesRepository.getUserIdByEmail(email);
+        int userId = userRepository.getUserIdByEmail(email);
 
         if (userId <= 0 || movieId <= 0) {
             throw new IllegalArgumentException("Id must be greater than zero");

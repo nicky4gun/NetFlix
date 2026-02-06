@@ -25,10 +25,10 @@ public class HelloApplication extends Application {
 
         UserService userService = new UserService(userRepository);
         MovieService movieService = new MovieService(movieRepository);
-        FavoritesService favoritesService = new FavoritesService(favoritesRepository);
+        FavoritesService favoritesService = new FavoritesService(favoritesRepository, userRepository);
 
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("netflix.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        Scene scene = new Scene(fxmlLoader.load(), 950, 450);
 
         // Temporary Injection (meant to be services)
         HelloController controller = fxmlLoader.getController();
