@@ -5,12 +5,6 @@ public class Favorite {
     private int userId;
     private int movieId;
 
-    public Favorite(int id, int userId, int movieId) {
-        this.id = id;
-        this.userId = userId;
-        this.movieId = movieId;
-    }
-
     public Favorite(int userId, int movieId) {
         this.userId = userId;
         this.movieId = movieId;

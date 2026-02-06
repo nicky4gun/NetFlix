@@ -36,13 +36,19 @@ public class FavoritesService {
             throw new IllegalArgumentException("Email is null or empty");
         }
 
+        List<Movie> favorites = favoritesRepository.readAllFavorites(email);
+
+        if (favorites.isEmpty()) {
+            throw new IllegalArgumentException("No favorites found for user: " + email);
+        }
+
         int userId = userRepository.getUserIdByEmail(email);
 
         if (userId <= 0) {
             throw new IllegalArgumentException("User with email " + email + " not found");
         }
 
-        return favoritesRepository.readAllFavorites(email);
+        return favorites;
     }
 
     public void deleteFavorite(String email, int movieId) {
@@ -50,11 +56,12 @@ public class FavoritesService {
             throw new IllegalArgumentException("Email is null or empty");
         }
 
-        if (movieId <= 0) {
-            throw new IllegalArgumentException("favorite not found");
-        }
+        int favId = favoritesRepository.getFavoriteIdByEmailAndMovieId(email, movieId);
 
-        int favId = favoritesRepository.getFavoriteIdByEmailAndMovie(email, movieId);
+
+        if (movieId <= 0 || favId <= 0) {
+            throw new IllegalArgumentException("Favorite not found");
+        }
 
         boolean deleted = favoritesRepository.removeFavorite(favId);
 

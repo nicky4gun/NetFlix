@@ -17,4 +17,6 @@ module com.example.netflix {
 
     opens com.example.netflix.repositories to javafx.fxml;
     exports com.example.netflix.repositories;
+    exports com.example.netflix.ui;
+    opens com.example.netflix.ui to javafx.fxml;
 }

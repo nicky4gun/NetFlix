@@ -15,28 +15,27 @@ public class MovieRepository {
     }
 
     public void addMovie (Movie movie) {
-       String sql ="insert into movies (name, genre, length, description) VALUES (?,?,?,?)";
-          try (Connection conn = config.getConnection();
-               PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        String sql ="insert into movies (name, genre, length, description) VALUES (?,?,?,?)";
 
-              stmt.setString(1,movie.getTitle());
-              stmt.setString(2,movie.getGenre());
-              stmt.setString(3,movie.getLength());
-              stmt.setString(4,movie.getDescription());
-              stmt.executeUpdate();
+        try (Connection conn = config.getConnection();
+           PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-              ResultSet keys = stmt.getGeneratedKeys();
+          stmt.setString(1,movie.getTitle());
+          stmt.setString(2,movie.getGenre());
+          stmt.setString(3,movie.getLength());
+          stmt.setString(4,movie.getDescription());
+          stmt.executeUpdate();
 
-              if (keys.next()) {
-                  int id  = keys.getInt(1);
-                  movie.setId(id);
-              }
+          ResultSet keys = stmt.getGeneratedKeys();
 
-          } catch(SQLException e) {
-              throw new RuntimeException("something happen while trying to add the movie please try again ");
-
-
+          if (keys.next()) {
+              int id  = keys.getInt(1);
+              movie.setId(id);
           }
+
+        } catch(SQLException e) {
+          throw new RuntimeException("Something happen while trying to add the movie", e);
+        }
     }
 
     public List<Movie> readAllMovies() {
@@ -78,7 +77,6 @@ public class MovieRepository {
         } catch (SQLException e){
             throw new RuntimeException("can't find the Movie");
         }
-
     }
 }
 

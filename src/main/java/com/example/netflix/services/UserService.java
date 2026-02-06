@@ -26,7 +26,13 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
-        return userRepository.readAllUsers();
+        List<User> users = userRepository.readAllUsers();
+
+        if (users.isEmpty()) {
+            throw new IllegalArgumentException("No users found");
+        }
+
+        return users;
     }
 
     public void updateUser(int id, String name, String email) {

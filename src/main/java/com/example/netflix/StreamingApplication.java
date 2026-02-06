@@ -7,6 +7,7 @@ import com.example.netflix.repositories.UserRepository;
 import com.example.netflix.services.FavoritesService;
 import com.example.netflix.services.MovieService;
 import com.example.netflix.services.UserService;
+import com.example.netflix.ui.StreamingController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -14,7 +15,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class StreamingApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         // Initialize classes
@@ -27,12 +28,11 @@ public class HelloApplication extends Application {
         MovieService movieService = new MovieService(movieRepository);
         FavoritesService favoritesService = new FavoritesService(favoritesRepository, userRepository);
 
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("netflix.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(StreamingApplication.class.getResource("netflix.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 950, 450);
 
-        // Temporary Injection (meant to be services)
-        HelloController controller = fxmlLoader.getController();
-        controller.setConfig(config);
+        // Service Injection
+        StreamingController controller = fxmlLoader.getController();
         controller.setService(userService, movieService, favoritesService);
 
         stage.setTitle("Streaming Platform");

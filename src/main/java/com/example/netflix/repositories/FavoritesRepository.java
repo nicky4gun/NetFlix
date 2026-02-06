@@ -33,7 +33,7 @@ public class FavoritesRepository {
         }
     }
 
-    public int getFavoriteIdByEmailAndMovie(String email, int movieId) {
+    public int getFavoriteIdByEmailAndMovieId(String email, int movieId) {
         String sql = """
                 SELECT fav_id FROM favorites f
                 INNER JOIN users u ON f.usr_id = u.id

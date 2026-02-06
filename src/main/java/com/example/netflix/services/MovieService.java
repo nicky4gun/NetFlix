@@ -12,7 +12,7 @@ public class MovieService {
         this.movieRepository = movieRepository;
     }
 
-    public void addMovie(String name, String genre,String length,String description  ) {
+    public void addMovie(String name, String genre, String length, String description) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
@@ -20,6 +20,7 @@ public class MovieService {
         if (genre == null || genre.isEmpty()) {
             throw new IllegalArgumentException("Genre cannot be null or empty");
         }
+
         if (length == null || length.isEmpty()) {
             throw new IllegalArgumentException("Length cannot be null or empty");
         }
@@ -27,12 +28,19 @@ public class MovieService {
         if (description == null || description.isEmpty()) {
             throw new IllegalArgumentException("Description cannot be null or empty");
         }
+
         Movie movie =  new Movie(name, genre,length,description);
         movieRepository.addMovie(movie);
     }
 
     public List<Movie> getAllMovies() {
-        return movieRepository.readAllMovies();
+        List<Movie> movies = movieRepository.readAllMovies();
+
+        if (movies.isEmpty()) {
+            throw new IllegalArgumentException("No movies found in database");
+        }
+
+        return movies;
     }
 
     public void removeMovie(int id) {

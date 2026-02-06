@@ -7,7 +7,7 @@ public class Movie {
     private String length;
     private String description;
 
-    public Movie (int id, String title, String genre, String length, String description) {
+    public Movie(int id, String title, String genre, String length, String description) {
         this.id = id;
         this.title = title;
         this.genre = genre;
@@ -15,7 +15,7 @@ public class Movie {
         this.description = description;
     }
 
-    public Movie (String title, String genre, String length, String description) {
+    public Movie(String title, String genre, String length, String description) {
         this.title = title;
         this.genre = genre;
         this.length = length;
