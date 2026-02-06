@@ -18,18 +18,19 @@ public class MovieService {
         }
 
         if (genre == null || genre.isEmpty()) {
-            throw new IllegalArgumentException("genre cannot be null or empty");
+            throw new IllegalArgumentException("Genre cannot be null or empty");
         }
         if (length == null || length.isEmpty()) {
-            throw new IllegalArgumentException("length cannot be null or empty");
+            throw new IllegalArgumentException("Length cannot be null or empty");
         }
 
         if (description == null || description.isEmpty()) {
-            throw new IllegalArgumentException("description cannot be null or empty");
+            throw new IllegalArgumentException("Description cannot be null or empty");
         }
         Movie movie =  new Movie(name, genre,length,description);
         movieRepository.addMovie(movie);
     }
+
     public List<Movie> getAllMovies() {
         return movieRepository.readAllMovies();
     }

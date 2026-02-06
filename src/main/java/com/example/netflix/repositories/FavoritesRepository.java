@@ -33,6 +33,31 @@ public class FavoritesRepository {
         }
     }
 
+    public int getFavoriteIdByEmailAndMovie(String email, int movieId) {
+        String sql = """
+                SELECT fav_id FROM favorites f
+                INNER JOIN users u ON f.usr_id = u.id
+                WHERE u.email = ? AND f.movie_id = ?
+                """;
+
+        try (Connection conn = config.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+            stmt.setInt(2, movieId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("fav_id");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to get favorite id", e);
+        }
+
+        return 0;
+    }
+
     public List<Movie> readAllFavorites(String email) {
         List<Movie> favorites = new ArrayList<>();
         String sql = """
@@ -66,7 +91,7 @@ public class FavoritesRepository {
     }
 
     public Boolean removeFavorite(int id) {
-        String sql = "DELETE FROM favorites WHERE id = ?";
+        String sql = "DELETE FROM favorites WHERE fav_id = ?";
 
         try (Connection conn = config.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.paint.Color;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -49,8 +50,6 @@ public class HelloController {
 
     @FXML private TextField emailTxt;
     @FXML private TextField movieTxt;
-    @FXML private Button add;
-    @FXML private Button remove;
     @FXML private Label errorLabel;
     @FXML private Button confirmEmail;
 
@@ -97,53 +96,74 @@ public class HelloController {
         }
     }
 
-    public void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
     public void loadMovies( ){
         movieList.clear();
         movieList.addAll(movieService.getAllMovies());
         movieTableView.setItems(movieList);
     }
 
-    public void onActionConfirmEmail()  {
+    @FXML
+    protected void onActionConfirmEmail() {
        String email = emailTxt.getText();
-       List<Movie> favoriteMovies = favoritesService.getFavoritesByEmail(email);
 
-       favorites.clear();
-       favorites.addAll(favoriteMovies);
-       favoritesList.setItems(favorites);
-       emailTxt.clear();
+        if (email == null || email.isEmpty()) {
+            favorites.clear();
+            return;
+        }
 
-       if (email.isEmpty()) {
-           refreshFavoritesView();
+        try {
+           List<Movie> favoriteMovies = favoritesService.getFavoritesByEmail(email);
+           favorites.clear();
+           favorites.addAll(favoriteMovies);
+           favoritesList.setItems(favorites);
+
+           errorLabel.setText("Success: Loaded " + favoriteMovies.size() + " movies");
+           emailTxt.clear();
+
+       } catch (IllegalArgumentException e) {
+           errorLabel.setText("Error: " + e.getMessage());
+           errorLabel.setTextFill(Color.RED);
        }
     }
 
-    public void refreshFavoritesView() {
-        favorites.clear();
-    }
-
-    public void add() {
+    @FXML
+    protected void add() {
         Movie selectedMovie = movieTableView.getSelectionModel().getSelectedItem();
         String email = emailTxt.getText();
 
         if (selectedMovie != null && email != null) {
-            favoritesService.addFavorite(email, selectedMovie.getId());
-            favorites.add(selectedMovie);
+            try {
+                favoritesService.addFavorite(email, selectedMovie.getId());
+                favorites.add(selectedMovie);
+
+                errorLabel.setText("Success: Added movie " + selectedMovie.getTitle() + " to " + email + "'s favorites");
+                errorLabel.setTextFill(Color.GREEN);
+                emailTxt.clear();
+
+            } catch (IllegalArgumentException e) {
+                errorLabel.setText("Error: " + e.getMessage());
+                errorLabel.setTextFill(Color.RED);
+            }
         }
     }
 
-    public void remove() {
+    @FXML
+    protected void remove() {
+        Movie selectedMovie = favoritesList.getSelectionModel().getSelectedItem();
+        String email = emailTxt.getText();
 
-    }
+        try {
+            if (selectedMovie != null && email != null) {
+                favoritesService.deleteFavorite(email, selectedMovie.getId());
+                favorites.remove(selectedMovie);
+            }
 
-    public void onActionMovieTxt() {
+            errorLabel.setText("Success: Removed " + selectedMovie.getTitle() + " from favorites");
+            errorLabel.setTextFill(Color.GREEN);
 
+        } catch (IllegalArgumentException e) {
+            errorLabel.setText("Error: " + e.getMessage());
+            errorLabel.setTextFill(Color.RED);
+        }
     }
 }

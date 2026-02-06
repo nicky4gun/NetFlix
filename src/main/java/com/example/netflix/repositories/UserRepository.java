@@ -50,7 +50,7 @@ public class UserRepository {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to get user", e);
+            throw new RuntimeException("Failed to get user id", e);
         }
 
         return 0;
